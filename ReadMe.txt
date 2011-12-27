@@ -1,0 +1,3 @@
+The core library is a low-level C++ class library to handle miscellaneous core program utility functionality: strings, memory allocation, containers, cross-platform normalization, etc.
+
+History and License: The core library is derived from code initially written at Dynamix, Inc., for the Tribes series of computer games, and evolved through the development of several generations of Torque game engine technologies at GarageGames.  The core library was first released as open source software under the GNU Public License (v2) as part of the Torque Network Library and then under the MIT license as part of the torque_sockets web networking proof-of-concept.  The full license terms can be found in the license.txt file in the root directory of this distribution.
