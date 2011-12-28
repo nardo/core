@@ -12,8 +12,8 @@ public:
 	{
 		#ifdef PLATFORM_WIN32
 			_semaphore = CreateSemaphore(NULL, initial_count, maximum_count, NULL);
-		#elif defined(PLATFORM_MAC_OSX)
-			MPCreateSemaphore(maximum_count, initial_count, &_semaphore);
+		//#elif defined(PLATFORM_MAC_OSX)
+		//	MPCreateSemaphore(maximum_count, initial_count, &_semaphore);
 		#else
 			sem_init(&_semaphore, 0, initial_count);
 		#endif
@@ -22,8 +22,8 @@ public:
 	{
 		#ifdef PLATFORM_WIN32
 			CloseHandle(_semaphore);
-		#elif defined(PLATFORM_MAC_OSX)
-			MPDeleteSemaphore(_semaphore);
+		//#elif defined(PLATFORM_MAC_OSX)
+		//	MPDeleteSemaphore(_semaphore);
 		#else
 			sem_destroy(&_semaphore);
 		#endif
@@ -36,8 +36,8 @@ public:
 	{
 		#ifdef PLATFORM_WIN32
 			WaitForSingleObject(_semaphore, INFINITE);
-		#elif defined(PLATFORM_MAC_OSX)
-			MPWaitOnSemaphore(_semaphore, kDurationForever);
+		//#elif defined(PLATFORM_MAC_OSX)
+		//	MPWaitOnSemaphore(_semaphore, kDurationForever);
 		#else
 			sem_wait(&_semaphore);
 		#endif
@@ -48,9 +48,9 @@ public:
 	{
 		#ifdef PLATFORM_WIN32
 			ReleaseSemaphore(_semaphore, count, NULL);
-		#elif defined(PLATFORM_MAC_OSX)
-			for(uint32 i = 0; i < count; i++)
-				MPSignalSemaphore(_semaphore);
+		//#elif defined(PLATFORM_MAC_OSX)
+		//	for(uint32 i = 0; i < count; i++)
+		//		MPSignalSemaphore(_semaphore);
 		#else
 			for(uint32 i = 0; i < count; i++)
 				sem_post(&_semaphore);
@@ -60,8 +60,8 @@ public:
 private:
 	#ifdef PLATFORM_WIN32
 		HANDLE _semaphore;
-	#elif defined(PLATFORM_MAC_OSX)
-		MPSemaphoreID _semaphore;
+	//#elif defined(PLATFORM_MAC_OSX)
+	//	MPSemaphoreID _semaphore;
 	#else
 		sem_t _semaphore;
 	#endif

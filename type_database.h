@@ -20,7 +20,7 @@ class type_database
 		{
 			if(func_signature->argument_types[i] != calling_signature->argument_types[i])
 			{
-				printf("arg type %d mismatch!!\n");
+				printf("arg type %d mismatch!!\n", i);
 				return;
 			}
 		}
@@ -45,7 +45,7 @@ class type_database
 		{
 			if(func_signature->argument_types[i] != calling_signature->argument_types[i])
 			{
-				printf("arg type %d mismatch!!\n");
+				printf("arg type %d mismatch!!\n", i);
 				return;
 			}
 		}
@@ -219,7 +219,7 @@ public:
 
 	void begin_class(static_string class_name, type_record *class_type, type_record *super_class_type, bool indexed)
 	{
-		printf("beginning class %s - type = %08x, super = %08x\n", class_name, class_type, super_class_type);
+		printf("beginning class %s - type = %p, super = %p\n", class_name, class_type, super_class_type);
 		assert(_current_class == 0);
 		
 		type_rep *the_class = new type_rep;
@@ -253,7 +253,7 @@ public:
 	void add_public_slot(static_string slot_name, uint32 slot_offset, type_record *type, type_rep *compound_type, write_function_type write_function, read_function_type read_function, uint32 state_index)
 	{
 		assert(_current_class != 0);
-		printf("  -adding field %s - offset = %d, type = %08x\n", slot_name, slot_offset, type);
+		printf("  -adding field %s - offset = %d, type = %p\n", slot_name, slot_offset, type);
 		field_rep the_field;
 		indexed_string name = static_to_indexed_string(slot_name);
 		the_field.name = name;
@@ -315,7 +315,7 @@ public:
 			indexed_string parent_class_name;
 			if((*p.value())->parent_class)
 				parent_class_name = (*p.value())->parent_class->name;
-			printf("class %s : %s (%x)\n", (*p.value())->name.c_str(), parent_class_name.c_str(), (*p.value())->type);
+			printf("class %s : %s (%p)\n", (*p.value())->name.c_str(), parent_class_name.c_str(), (*p.value())->type);
 			for(hash_table_array<indexed_string, field_rep>::pointer fp = (*p.value())->fields.first(); fp; ++fp)
 				dump_field(fp.value());
 			dictionary<type_rep *>::pointer lookup_p = _class_table.find((*p.value())->name);
@@ -330,7 +330,7 @@ public:
 	{
 		type_record *field_type = the_field->type;
 		
-		printf("  %s - offset = %d - type = %08x  ", the_field->name.c_str(), the_field->offset, field_type);
+		printf("  %s - offset = %d - type = %p  ", the_field->name.c_str(), the_field->offset, field_type);
 		dump_type(field_type);
 		printf("\n");
 	}
@@ -357,7 +357,7 @@ public:
 			}
 			else if(numeric_info->is_float)
 			{
-				printf("float%d", type->size * 8);
+				printf("float%ld", type->size * 8);
 			}
 			return;
 		}
@@ -397,7 +397,7 @@ public:
 		type_record *dest_type = get_global_type_record<a>();
 		type_record *source_type = get_global_type_record<b >();
 		
-		fprintf(stderr, "Adding type conversion from %08x to %08x\n", source_type, dest_type);
+		fprintf(stderr, "Adding type conversion from %p to %p\n", source_type, dest_type);
 		
 		uint32 key = get_type_conversion_key(source_type, dest_type);
 		type_conversion_info info;
@@ -410,7 +410,7 @@ public:
 	//static void convert_float
 	bool type_convert(void *dest, type_record *dest_type, const void *source, type_record *source_type)
 	{
-		fprintf(stderr, "Converting from %08x to %08x\n", source_type, dest_type);
+		fprintf(stderr, "Converting from %p to %p\n", source_type, dest_type);
 		
 		if(dest_type == source_type)
 		{

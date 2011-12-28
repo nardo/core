@@ -57,12 +57,13 @@ template <typename signature> uint32 hash_method(signature the_method)
 typedef void *void_ptr;
 
 template<> inline uint32 hash<void_ptr>(const void_ptr &x) {
-	return uint32(x);
+	uintptr_t i = (uintptr_t) x;
+	return uint32(i);
 }
 numeric_hash_overload(int)
 numeric_hash_overload(uint32)
 
-template<> inline uint32 hash(const char *x) { return uint32(x); }
+template<> inline uint32 hash(const char *x) { uintptr_t i = (uintptr_t) x; return uint32(i); }
 //template<class type> uint32 hash(const type *x) { return uint32(x); }
 template<class table> class hash_table_tester
 {

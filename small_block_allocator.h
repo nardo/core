@@ -103,12 +103,12 @@ template <typename block_reference_type = void> class small_block_allocator
 	
 	static bool _is_page_aligned(void *memory)
 	{
-		return (uint32(memory) & page_mask) == 0;
+		return (uintptr_t(memory) & page_mask) == 0;
 	}
 	
 	static page *_find_page(void *memory)
 	{
-		uint32 offset = uint32(memory) & page_mask;
+		uintptr_t offset = uintptr_t(memory) & page_mask;
 		page *ret = (page *) ((uint8 *) memory - offset);
 		return ret;
 	}
