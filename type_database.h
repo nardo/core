@@ -250,10 +250,10 @@ public:
 		_add_type(the_class);
 	}
 	
-	void add_public_slot(static_string slot_name, uint32 slot_offset, type_record *type, type_rep *compound_type, write_function_type write_function, read_function_type read_function, uint32 state_index)
+	void add_public_slot(static_string slot_name, uintptr_t slot_offset, type_record *type, type_rep *compound_type, write_function_type write_function, read_function_type read_function, uint32 state_index)
 	{
 		assert(_current_class != 0);
-		printf("  -adding field %s - offset = %d, type = %p\n", slot_name, slot_offset, type);
+		printf("  -adding field %s - offset = %ld, type = %p\n", slot_name, slot_offset, type);
 		field_rep the_field;
 		indexed_string name = static_to_indexed_string(slot_name);
 		the_field.name = name;
@@ -271,7 +271,7 @@ public:
 	
 	template<typename type> void add_public_slot(static_string slot_name, type *slot_type_and_offset, uint32 state_index)
 	{
-		uint32 offset = uint32(slot_type_and_offset);
+		uintptr_t offset = uintptr_t(slot_type_and_offset);
 		
 		type_record *type_rec = get_global_type_record<type>();
 		
@@ -467,7 +467,7 @@ public:
 	{
 		return _context;
 	}
-private:
+//private:
 	static_to_indexed_string_map _string_remapper;
 	hash_table_flat<indexed_string, function_record *> _function_table;
 	context *_context;
@@ -482,17 +482,17 @@ private:
 	hash_table_array<uint32, type_conversion_info> _conversion_table;
 };
 
-#define tnl_begin_class(registry, class_name, super_class_name, indexed) \
+#define core_type_begin_class(registry, class_name, super_class_name, indexed) \
 	registry.begin_class(#class_name, core::get_global_type_record<class_name>(), core::get_global_type_record<super_class_name>(), indexed);
 
-#define tnl_slot(registry, class_name, slot_name, state_group) \
+#define core_type_slot(registry, class_name, slot_name, state_group) \
 	registry.add_public_slot(#slot_name, &((class_name *) 0)->slot_name, state_group);
 
-#define tnl_compound_slot(registry, class_name, slot_name, state_group) \
+#define core_type_compound_slot(registry, class_name, slot_name, state_group) \
 	registry.add_compound_slot(#slot_name, &((class_name *) 0)->slot_name, state_group);
 
-#define tnl_method(registry, class_name, method_name) \
+#define core_type_method(registry, class_name, method_name) \
 	registry.add_method(#method_name, &class_name::method_name);
 
-#define tnl_end_class(registry) \
+#define core_type_end_class(registry) \
 	registry.end_class();
