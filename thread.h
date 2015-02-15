@@ -14,6 +14,9 @@ public:
 			_semaphore = CreateSemaphore(NULL, initial_count, maximum_count, NULL);
 		//#elif defined(PLATFORM_MAC_OSX)
 		//	MPCreateSemaphore(maximum_count, initial_count, &_semaphore);
+		#elif defined(PLATFORM_MAC_OSX)
+			_semaphore = sem_open("this_is_a_core_semaphore", O_CREAT);
+			sem_unlink("this_is_a_core_semaphore");
 		#else
 			sem_init(&_semaphore, 0, initial_count);
 		#endif
@@ -22,8 +25,8 @@ public:
 	{
 		#ifdef PLATFORM_WIN32
 			CloseHandle(_semaphore);
-		//#elif defined(PLATFORM_MAC_OSX)
-		//	MPDeleteSemaphore(_semaphore);
+		#elif defined(PLATFORM_MAC_OSX)
+			sem_close(_semaphore);
 		#else
 			sem_destroy(&_semaphore);
 		#endif
@@ -36,7 +39,8 @@ public:
 	{
 		#ifdef PLATFORM_WIN32
 			WaitForSingleObject(_semaphore, INFINITE);
-		//#elif defined(PLATFORM_MAC_OSX)
+		#elif defined(PLATFORM_MAC_OSX)
+			sem_wait(_semaphore);
 		//	MPWaitOnSemaphore(_semaphore, kDurationForever);
 		#else
 			sem_wait(&_semaphore);
@@ -48,7 +52,8 @@ public:
 	{
 		#ifdef PLATFORM_WIN32
 			ReleaseSemaphore(_semaphore, count, NULL);
-		//#elif defined(PLATFORM_MAC_OSX)
+		#elif defined(PLATFORM_MAC_OSX)
+			sem_post(_semaphore);
 		//	for(uint32 i = 0; i < count; i++)
 		//		MPSignalSemaphore(_semaphore);
 		#else
@@ -60,8 +65,8 @@ public:
 private:
 	#ifdef PLATFORM_WIN32
 		HANDLE _semaphore;
-	//#elif defined(PLATFORM_MAC_OSX)
-	//	MPSemaphoreID _semaphore;
+	#elif defined(PLATFORM_MAC_OSX)
+		sem_t *_semaphore;
 	#else
 		sem_t _semaphore;
 	#endif
@@ -181,20 +186,15 @@ protected:
 #ifdef PLATFORM_WIN32
 	HANDLE _thread;
 	static DWORD WINAPI thread_proc( LPVOID lp_parameter )
-	{
-		DWORD ret = ((thread *) lp_parameter)->run();
-		 ((thread *) lp_parameter)->_thread_running = false;
-		 return ret;
-	}
 #else
 	pthread_t _thread;
 	static void *thread_proc(void *lp_parameter)
-	{
-		void *ret = (void *) ((thread *) lp_parameter)->run();
-		((thread *) lp_parameter)->_thread_running = false;
-		return ret;
-	}
 #endif
+	{
+		((thread *) lp_parameter)->_return_value = ((thread *) lp_parameter)->run();
+		((thread *) lp_parameter)->_thread_running = false;
+		return 0;
+	}
 };
 
 /// Platform independent per-thread storage class.

@@ -167,7 +167,7 @@ class indexed_string
 					string_compare_result val = _compare_strings(buffer, buffer_len, walk->string_data);
 					if(val == not_at_all_equal)
 						continue;
-					else if(full_match && val == totally_equal || !full_match)
+					else if((full_match && val == totally_equal) || !full_match)
 						return walk;
 				}
 			}
