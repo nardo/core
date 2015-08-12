@@ -2,6 +2,7 @@
 
 class string
 {
+protected:
 	struct string_record
 	{
 		uint32 ref_count;
@@ -74,13 +75,19 @@ public:
 	
 	void set(const char *string_data, uint32 len)
 	{
+		reserve(len);
+		memcpy(_string_record->data, string_data, len);
+	}
+	void reserve(uint32 len)
+	{
 		_dec_ref();
 		_string_record = (string_record *) memory_allocate(sizeof(string_record) + len);
 		_string_record->len = len;
+		_string_record->data[len] = 0; // ensure null termination after buffer length
 		_string_record->ref_count = 1;
-		memcpy(_string_record->data, string_data, len);
-		_string_record->data[len] = 0;
+
 	}
+
 	void set(const unsigned char *string_data, uint32 len)
 	{
 		set((const char *) string_data, len);
@@ -98,7 +105,11 @@ public:
 	{
 		return (uint8 *) _string_record->data;
 	}
-	uint32 len()
+	const uint8 *data() const
+	{
+		return (uint8 *) _string_record->data;
+	}
+	uint32 len() const
 	{
 		return _string_record->len;
 	}

@@ -414,7 +414,7 @@ template<class arg1> struct function_record_decl<void (*)(arg1)> : function_reco
 	}
 	void dispatch(void *object, void **arguments, void *return_data_ptr)
 	{
-		_func(*((arg1 *)arguments[0]));
+		_func(unref<arg1>::deref_cast(arguments[0]));
 	}
 };
 

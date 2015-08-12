@@ -83,15 +83,24 @@ enum allocation_space {
 	allocation_space_small_block,
 };
 
+template<typename T> struct unref {
+  typedef T raw;
+  static T &deref_cast(void *p) { return *((T*)p); }
+};
+template<typename T> struct unref<T&> {
+  typedef T *raw;
+  static T &deref_cast(void *p) { return **((T**)p);}
+};
+
 template<typename type> struct pointer_manipulator
 {
 	typedef empty_type pointee_type;
 	static const allocation_space pointee_allocation_space = allocation_space_heap;
 
 	// by default this returns the pointer's pointee type.
-	static type_record *get_real_pointee_type(type */*pointer*/) { return get_global_type_record<pointee_type>(); }
-	static pointee_type *dereference(type */*type_instance*/) { return 0; }
-	static void assign_instance(type */*pointer*/, pointee_type */*object*/) {}
+	static type_record *get_real_pointee_type(typename unref<type>::raw */*pointer*/) { return get_global_type_record<pointee_type>(); }
+	static pointee_type *dereference(typename unref<type>::raw */*type_instance*/) { return 0; }
+	static void assign_instance(typename unref<type>::raw */*pointer*/, pointee_type */*object*/) {}
 };
 
 struct pointer_record
@@ -131,12 +140,12 @@ template<typename type> struct container_manipulator
 	typedef empty_type key_type;
 	typedef empty_type value_type;
 
-	static bool reserve(type */*container*/, uint32 /*size*/, context */*the_context*/) { return false; }
-	static void insert_key_value(type */*container*/, key_type */*key*/, value_type */*value*/, context */*the_context*/) { }
-	static value_type *insert_key(type */*container*/, key_type */*key*/, context */*the_context*/) { return 0; }
-	static uint32 size(type */*container*/) { return 0; }
+	static bool reserve(typename unref<type>::raw */*container*/, uint32 /*size*/, context */*the_context*/) { return false; }
+	static void insert_key_value(typename unref<type>::raw */*container*/, key_type */*key*/, value_type */*value*/, context */*the_context*/) { }
+	static value_type *insert_key(typename unref<type>::raw */*container*/, key_type */*key*/, context */*the_context*/) { return 0; }
+	static uint32 size(typename unref<type>::raw */*container*/) { return 0; }
 	
-	static value_type *find_element(type */*container*/, key_type */*key*/) { return 0; }
+	static value_type *find_element(typename unref<type>::raw */*container*/, key_type */*key*/) { return 0; }
 };
 
 struct container_record
@@ -224,9 +233,9 @@ template<class type_name> struct type_record_instance : public type_record
 		else
 			container_info = 0;
 		
-		type_name * (*construct_inst)(type_name *object) = &construct;
-		type_name * (*construct_copy_inst)(type_name *object, const type_name &copy_of) = &construct;
-		void (*destroy_inst)(type_name *object) = &destroy;
+		typename unref<type_name>::raw * (*construct_inst)(typename unref<type_name>::raw *object) = &construct;
+		typename unref<type_name>::raw * (*construct_copy_inst)(typename unref<type_name>::raw *object, const typename unref<type_name>::raw &copy_of) = &construct;
+		void (*destroy_inst)(typename unref<type_name>::raw *object) = &destroy;
 		
 		construct_object = (construct_object_fn) construct_inst;
 		construct_copy_object = (construct_copy_object_fn) construct_copy_inst;

@@ -133,7 +133,7 @@ public:
 				else
 				{
 					if(!val->write_function(stream, (const void *) field_p))
-						return false;					
+						return false;
 				}
 			}
 			return true;
