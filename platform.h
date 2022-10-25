@@ -73,6 +73,13 @@ static const char *compiler_string = "GNU C Compiler";
 	#if defined(__GNUC__)
 		#define INLINE_ASM_STYLE_GCC_PPC
 	#endif
+#elif defined(__aarch64__)
+    static const char *cpu_string = "ARM64";
+    #ifndef LITTLE_ENDIAN
+        #define LITTLE_ENDIAN
+    #endif
+    #define CPU_64BIT
+    #define CPU_ARM64
 #else
 	#error "Unsupported CPU"
 #endif
